@@ -1,0 +1,107 @@
+# Residencia San Ildefonso — .htaccess (Apache 2.4+)
+# Estándar ELIAWEB v4
+
+# ----- HTTPS forzado -----
+RewriteEngine On
+RewriteCond %{HTTPS} off
+RewriteRule ^(.*)$ https://%{HTTP_HOST}%{REQUEST_URI} [L,R=301]
+
+# ----- Forzar www -----
+RewriteCond %{HTTP_HOST} ^residenciasanildefonso\.es$ [NC]
+RewriteRule ^(.*)$ https://www.residenciasanildefonso.es/$1 [L,R=301]
+
+# ----- Página 404 -----
+ErrorDocument 404 /404.html
+
+# ----- MIME types (asegurar tipos correctos) -----
+<IfModule mod_mime.c>
+    AddType image/webp                  .webp
+    AddType image/svg+xml               .svg .svgz
+    AddType font/woff2                  .woff2
+    AddType application/manifest+json   .webmanifest
+</IfModule>
+
+# ----- Caché del navegador -----
+<IfModule mod_expires.c>
+    ExpiresActive On
+    ExpiresDefault                          "access plus 1 month"
+    ExpiresByType image/webp                "access plus 1 year"
+    ExpiresByType image/jpeg                "access plus 1 year"
+    ExpiresByType image/png                 "access plus 1 year"
+    ExpiresByType image/svg+xml             "access plus 1 year"
+    ExpiresByType image/x-icon              "access plus 1 year"
+    ExpiresByType image/vnd.microsoft.icon  "access plus 1 year"
+    ExpiresByType text/css                  "access plus 1 year"
+    ExpiresByType application/javascript    "access plus 1 year"
+    ExpiresByType text/javascript           "access plus 1 year"
+    ExpiresByType font/woff2                "access plus 1 year"
+    ExpiresByType font/woff                 "access plus 1 year"
+    ExpiresByType application/xml           "access plus 1 day"
+    ExpiresByType text/xml                  "access plus 1 day"
+    ExpiresByType text/html                 "access plus 0 seconds"
+</IfModule>
+
+# ----- Cache-Control reforzado para assets estáticos -----
+<IfModule mod_headers.c>
+    <FilesMatch "\.(webp|jpe?g|png|svg|ico|woff2?|css|js)$">
+        Header set Cache-Control "public, max-age=31536000, immutable"
+    </FilesMatch>
+    <FilesMatch "\.(html|xml|txt)$">
+        Header set Cache-Control "public, max-age=0, must-revalidate"
+    </FilesMatch>
+</IfModule>
+
+# ----- Compresión -----
+<IfModule mod_deflate.c>
+    AddOutputFilterByType DEFLATE text/html text/css text/plain text/xml
+    AddOutputFilterByType DEFLATE application/javascript application/xml application/json
+    AddOutputFilterByType DEFLATE image/svg+xml font/woff2
+</IfModule>
+
+# ----- Pre-compresión Brotli (si está disponible en el hosting) -----
+<IfModule mod_brotli.c>
+    AddOutputFilterByType BROTLI_COMPRESS text/html text/css text/plain text/xml
+    AddOutputFilterByType BROTLI_COMPRESS application/javascript application/xml application/json
+    AddOutputFilterByType BROTLI_COMPRESS image/svg+xml font/woff2
+</IfModule>
+
+# ----- Cabeceras de seguridad -----
+<IfModule mod_headers.c>
+    Header set X-Content-Type-Options "nosniff"
+    Header set X-Frame-Options "SAMEORIGIN"
+    Header set Strict-Transport-Security "max-age=31536000; includeSubDomains; preload"
+    Header set Referrer-Policy "strict-origin-when-cross-origin"
+    Header set Permissions-Policy "geolocation=(), microphone=(), camera=(), interest-cohort=()"
+    Header set Cross-Origin-Opener-Policy "same-origin"
+    Header set X-Permitted-Cross-Domain-Policies "none"
+
+    # Content-Security-Policy:
+    # default 'self'; estilos de Google Fonts; imágenes propias + Wikimedia +
+    # tiles de Google Maps (gstatic, ggpht, googleusercontent) que carga el
+    # iframe del mapa cuando el usuario lo activa; formulario POST a Web3Forms;
+    # iframe de Google Maps en frame-src (carga bajo demanda).
+    Header set Content-Security-Policy "default-src 'self'; \
+        script-src 'self'; \
+        style-src 'self' https://fonts.googleapis.com; \
+        font-src 'self' https://fonts.gstatic.com; \
+        img-src 'self' data: https://commons.wikimedia.org https://upload.wikimedia.org https://maps.gstatic.com https://maps.googleapis.com https://*.googleusercontent.com https://*.ggpht.com; \
+        connect-src 'self' https://api.web3forms.com; \
+        form-action 'self' https://api.web3forms.com; \
+        frame-src https://www.google.com https://maps.google.com; \
+        frame-ancestors 'self'; \
+        base-uri 'self'; \
+        object-src 'none'; \
+        upgrade-insecure-requests"
+</IfModule>
+
+# ----- Ocultar versión y desactivar listado de directorios -----
+ServerSignature Off
+Options -Indexes
+
+# ----- Bloquear archivos sensibles -----
+<FilesMatch "\.(env|json|md|log|sql|bak|config|ini|yml|yaml)$">
+    Require all denied
+</FilesMatch>
+
+# ----- Charset por defecto -----
+AddDefaultCharset UTF-8

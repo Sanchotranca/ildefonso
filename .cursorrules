@@ -1,0 +1,64 @@
+Sigue ELIAWEB_STANDARDS_v4.md en todo momento. Sin excepciones.
+
+Proyecto: Residencia Universitaria San Ildefonso (residenciasanildefonso.es)
+Gestionada por CRUSA · Universidad de Alcalá.
+
+Reglas de código:
+- HTML5 semántico, CSS puro, sin frameworks (no Bootstrap, no Tailwind).
+- PROHIBIDO !important en CSS — usar @layer cascade layers.
+- Mobile first con breakpoints: 600px, 900px, 1200px.
+- Variables CSS en :root para todos los valores reutilizables (--space-xs/sm/md/lg/xl, --color-*, --font-*).
+- Reset al inicio: *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+- BEM: .bloque__elemento--modificador
+- Unidades: rem para tipografía, % / vw / vh / clamp() para layout
+- Un único archivo CSS (css/style.css) con cascade layers.
+- JS solo el imprescindible (js/main.js), defer.
+
+Reglas SEO:
+- Title: "[Keyword] — [Negocio] | [Ciudad]" max 60 chars
+- Meta description única 150-160 chars
+- Schema.org tipo LodgingBusiness con NAP real
+- Canonical, OG completo (con og:image 1200×630), favicons
+- NAP visible en footer de TODAS las páginas
+- Interlinking: sin páginas huérfanas
+
+NAP fijo:
+- Nombre: Residencia Universitaria San Ildefonso
+- Dirección: Plaza San Diego, s/n · 28801 Alcalá de Henares (Madrid)
+- Teléfono: +34 91 878 81 46
+- Email: sanildefonso@crusa.es
+
+Reglas de imagen:
+- WebP con dimensiones explícitas (width, height) en TODOS los <img>
+- Hero: loading="eager" fetchpriority="high"
+- Resto: loading="lazy"
+- OG image exacto 1200×630
+- Comprimir en https://squoosh.app/ antes de subir
+
+Reglas de formulario:
+- Web3Forms (action="https://api.web3forms.com/submit")
+- Honeypot anti-spam (campo "botcheck" oculto)
+- Casilla RGPD obligatoria con enlace a /politica-privacidad.html
+- Redirect a /gracias.html
+- Inputs con font-size: 16px (evitar zoom iOS)
+- Touch targets mínimo 44×44px
+- autocomplete adecuado en cada campo
+
+Páginas obligatorias en raíz:
+- index.html, 404.html, aviso-legal.html, politica-privacidad.html,
+  politica-cookies.html, gracias.html
+- robots.txt, sitemap.xml, .htaccess
+
+Banner de cookies:
+- Aceptar/Rechazar con la misma jerarquía visual
+- Sin dark patterns
+- Persistencia en localStorage (clave rsi-cookies-v1)
+
+Accesibilidad:
+- Contraste mínimo 4.5:1 (AA)
+- Skip link al inicio
+- aria-label en iconos sin texto
+- prefers-reduced-motion respetado
+- Un solo H1 por página
+
+Antes de entregar, revisar el checklist completo de la sección 16 del estándar.

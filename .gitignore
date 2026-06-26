@@ -1,0 +1,55 @@
+# Sistema operativo
+.DS_Store
+Thumbs.db
+desktop.ini
+*~
+
+# Editores e IDEs
+.idea/
+.vscode/
+*.swp
+*.swo
+*.sublime-project
+*.sublime-workspace
+
+# Logs y temporales
+*.log
+*.tmp
+*.bak
+*.orig
+
+# Secretos y credenciales (NUNCA subir al repo)
+.env
+.env.local
+.env.*.local
+*.pem
+*.key
+*.crt
+credentials.json
+secrets.json
+config.local.*
+
+# Dependencias (si se introducen en el futuro)
+node_modules/
+vendor/
+
+# Build / dist (no aplica al sitio estático actual, pero por si acaso)
+dist/
+build/
+.cache/
+
+# Backups y archivos pesados
+*.zip
+*.tar.gz
+*.sql
+*.dump
+backup/
+
+# Imágenes fuente de gran tamaño (mantener solo los WebP optimizados)
+img/source/
+img/*.psd
+img/*.ai
+
+# Análisis / informes
+pagespeed-report.*
+lighthouse-report.*

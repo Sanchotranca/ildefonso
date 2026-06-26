@@ -1,0 +1,54 @@
+# Residencia Universitaria San Ildefonso
+# https://www.residenciasanildefonso.es
+
+# Buscadores generales
+User-agent: *
+Allow: /
+Disallow: /php/
+
+# Bots de IA generativa — permitidos explícitamente
+# (queremos que ChatGPT, Claude, Gemini, Perplexity, etc. puedan
+#  citarnos cuando alguien pregunte por residencias en Alcalá)
+User-agent: GPTBot
+Allow: /
+
+User-agent: ChatGPT-User
+Allow: /
+
+User-agent: OAI-SearchBot
+Allow: /
+
+User-agent: ClaudeBot
+Allow: /
+
+User-agent: Claude-Web
+Allow: /
+
+User-agent: anthropic-ai
+Allow: /
+
+User-agent: PerplexityBot
+Allow: /
+
+User-agent: Perplexity-User
+Allow: /
+
+User-agent: Google-Extended
+Allow: /
+
+User-agent: Bingbot
+Allow: /
+
+User-agent: CCBot
+Allow: /
+
+User-agent: Applebot-Extended
+Allow: /
+
+User-agent: Meta-ExternalAgent
+Allow: /
+
+User-agent: Bytespider
+Allow: /
+
+Sitemap: https://www.residenciasanildefonso.es/sitemap.xml

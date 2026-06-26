@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" role="img" aria-label="Escudo de la Residencia Universitaria San Ildefonso">
+  <defs>
+    <linearGradient id="g" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#c14242"/>
+      <stop offset="100%" stop-color="#6e1212"/>
+    </linearGradient>
+  </defs>
+  <path d="M32 2 L58 12 V32 C58 48 46 58 32 62 C18 58 6 48 6 32 V12 Z"
+        fill="url(#g)" stroke="#c69214" stroke-width="2"/>
+  <path d="M32 10 L50 17 V32 C50 44 42 52 32 55 C22 52 14 44 14 32 V17 Z"
+        fill="none" stroke="#f3e9d2" stroke-width="1" opacity="0.6"/>
+  <text x="32" y="38" text-anchor="middle"
+        font-family="Georgia, 'Times New Roman', serif"
+        font-size="22" font-weight="700" fill="#f3e9d2">SI</text>
+  <circle cx="32" cy="48" r="2" fill="#c69214"/>
+</svg>
