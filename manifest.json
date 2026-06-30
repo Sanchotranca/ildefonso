@@ -1,0 +1,23 @@
+{
+  "name": "Residencia Universitaria San Ildefonso UAH",
+  "short_name": "Residencia San Ildefonso",
+  "description": "Alojamiento en el histórico Colegio Mayor de San Ildefonso, Alcalá de Henares. Gestionada por CRUSA – Universidad de Alcalá.",
+  "start_url": "/",
+  "display": "browser",
+  "lang": "es",
+  "dir": "ltr",
+  "theme_color": "#003DA5",
+  "background_color": "#ffffff",
+  "icons": [
+    {
+      "src": "/img/favicon-32.png",
+      "sizes": "32x32",
+      "type": "image/png"
+    },
+    {
+      "src": "/img/apple-touch-icon.png",
+      "sizes": "180x180",
+      "type": "image/png"
+    }
+  ]
+}

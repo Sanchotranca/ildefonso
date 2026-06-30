@@ -13,6 +13,9 @@ RewriteRule ^(.*)$ https://www.residenciasanildefonso.es/$1 [L,R=301]
 # ----- Página 404 -----
 ErrorDocument 404 /404.html
 
+# ----- Redirigir contacto.html → contacto.php (CAPTCHA PHP activo) -----
+RewriteRule ^contacto\.html$ /contacto.php [L,R=301]
+
 # ----- MIME types (asegurar tipos correctos) -----
 <IfModule mod_mime.c>
     AddType image/webp                  .webp
@@ -78,15 +81,15 @@ ErrorDocument 404 /404.html
     # Content-Security-Policy:
     # default 'self'; estilos de Google Fonts; imágenes propias + Wikimedia +
     # tiles de Google Maps (gstatic, ggpht, googleusercontent) que carga el
-    # iframe del mapa cuando el usuario lo activa; formulario POST a Web3Forms;
+    # iframe del mapa cuando el usuario lo activa; formulario POST a enviar.php (self);
     # iframe de Google Maps en frame-src (carga bajo demanda).
     Header set Content-Security-Policy "default-src 'self'; \
         script-src 'self'; \
-        style-src 'self' https://fonts.googleapis.com; \
+        style-src 'self' https://fonts.googleapis.com 'unsafe-inline'; \
         font-src 'self' https://fonts.gstatic.com; \
         img-src 'self' data: https://commons.wikimedia.org https://upload.wikimedia.org https://maps.gstatic.com https://maps.googleapis.com https://*.googleusercontent.com https://*.ggpht.com; \
-        connect-src 'self' https://api.web3forms.com; \
-        form-action 'self' https://api.web3forms.com; \
+        connect-src 'self'; \
+        form-action 'self'; \
         frame-src https://www.google.com https://maps.google.com; \
         frame-ancestors 'self'; \
         base-uri 'self'; \
@@ -98,10 +101,8 @@ ErrorDocument 404 /404.html
 ServerSignature Off
 Options -Indexes
 
-# ----- Bloquear archivos sensibles -----
-<FilesMatch "\.(env|json|md|log|sql|bak|config|ini|yml|yaml)$">
-    Require all denied
-</FilesMatch>
+# ----- PHP: suprimir errores en producción -----
+php_flag display_errors Off
+php_flag log_errors On
 
-# ----- Charset por defecto -----
-AddDefaultCharset UTF-8
+# ----- Bloquear archivos sensibles (jso

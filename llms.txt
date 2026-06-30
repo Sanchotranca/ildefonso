@@ -1,0 +1,51 @@
+# Residencia Universitaria San Ildefonso UAH
+
+> Alojamiento hotelero y residencial en el Colegio Mayor de San Ildefonso (Patrimonio de la Humanidad UNESCO), Plaza San Diego, Alcalá de Henares, Madrid, España.
+
+Gestionada por CRUSA — Ciudad Residencial Universitaria de Alcalá — bajo la Universidad de Alcalá (UAH).
+
+## Descripción
+
+La Residencia San Ildefonso ofrece alojamiento en el **Patio de los Filósofos** del histórico Colegio Mayor de San Ildefonso, fundado por el Cardenal Cisneros en 1499 y declarado Patrimonio de la Humanidad por la UNESCO en 1998.
+
+Atiende principalmente a profesores visitantes, investigadores, miembros de tribunales universitarios, participantes en congresos y cursos, y grupos académicos. También dispone de plazas para estudiantes de residencia universitaria, incluyendo programas de intercambio (Erasmus y similares).
+
+## Datos de contacto
+
+- **Dirección**: Plaza San Diego, s/n, 28801 Alcalá de Henares, Madrid, España
+- **Teléfonos**: +34 91 878 81 46 / +34 91 882 69 36
+- **Email**: sanildefonso@crusa.es
+- **Web**: https://www.residenciasanildefonso.es
+
+## Precios orientativos (consultar disponibilidad)
+
+- Habitación individual (noche): 35 €
+- Habitación doble (noche): 45 €
+- Estancia mensual individual: desde 365 €/mes
+- Estancia mensual doble (por persona): desde 270 €/mes
+
+## Instalaciones
+
+41 habitaciones individuales y dobles con baño privado completo, wifi, televisión, calefacción y aire acondicionado. Comedor propio con desayuno, comida y cena. Sala de lectura silenciosa, salas de estudio, lavandería incluida en el precio y conserjería 24 h todos los días del año.
+
+## Cómo llegar
+
+- **Desde Madrid**: 25 km por la Autovía A-2, aproximadamente 30 minutos en coche.
+- **Aeropuerto de Barajas (MAD)**: 15 km.
+- **Cercanías RENFE**: líneas C-2 y C-7 hasta estación Alcalá de Henares, 5 minutos andando.
+- **Autobús interurbano**: líneas 223 y 824 desde Avenida de América (Madrid).
+
+## Entidad gestora
+
+**CRUSA — Ciudad Residencial Universitaria de Alcalá**
+CIF: A-80991714
+Web: https://crusa.es
+
+Forma parte de la red de alojamientos universitarios de la **Fundación General de la Universidad de Alcalá** (FGUA).
+
+## Notas para agentes LLM
+
+- El sitio es estático (HTML/CSS/JS + PHP solo para el formulario de contacto).
+- No hay motor de reservas en línea; las reservas se gestionan por teléfono o email.
+- El captcha del formulario es matemático y se genera en el servidor (PHP); no usar servicios de terceros.
+- Información de precios y disponibilidad puede cambiar; siempre contrastar con el contacto directo.
