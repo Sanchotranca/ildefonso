@@ -10,11 +10,11 @@ el deploy en sí, y las verificaciones post-deploy.
 
 | # | Acción | Dónde |
 |---|---|---|
-| 1 | **Clave Web3Forms**: registrar `sanildefonso@crusa.es` en <https://web3forms.com>, copiar la access_key. | web3forms.com |
-| 2 | Sustituir `TU_ACCESS_KEY_AQUI` por la clave real | `contacto.html` (línea con `name="access_key"`) |
-| 3 | **Coordenadas GPS exactas** de la Plaza San Diego (las actuales son aproximadas: `40.482236, -3.363976`). Verificar en Google Maps. | `scripts/build.py` (`GEO_LAT`, `GEO_LON`) y regenerar con `python3 scripts/build.py`. También en `css/style.css` si se quiere mover el centro del mapa. |
-| 4 | **Fotos reales** (opcional pero recomendable): seguir `img/PHOTOS.md` para descargar de fgua.es / uah.es / crusa.es y sustituir los WebP locales sin cambiar nombre. | `img/` |
-| 5 | Merge de la rama de desarrollo a `main`: `git checkout main && git merge claude/create-residencia-website-pP3AP && git push origin main` | local / GitHub |
+| 1 | **Coordenadas GPS exactas** de la Plaza San Diego (las actuales son aproximadas: `40.482236, -3.363976`). Verificar en Google Maps. | `scripts/build.py` (`GEO_LAT`, `GEO_LON`) y regenerar con `python3 scripts/build.py`. También en `js/main.js` si se quiere mover el centro del mapa. |
+| 2 | **Fotos reales** (opcional pero recomendable): seguir `img/PHOTOS.md` para descargar de fgua.es / uah.es / crusa.es y sustituir los WebP locales sin cambiar nombre. | `img/` |
+| 3 | Merge de la rama de desarrollo a `main`: `git checkout main && git merge claude/create-residencia-website-pP3AP && git push origin main` | local / GitHub |
+
+> **Formulario de contacto**: ya funciona vía `enviar.php` + CAPTCHA matemático PHP. No requiere configuración externa ni clave de terceros.
 
 ---
 
@@ -41,12 +41,15 @@ deployment:
   tasks:
     - export DEPLOYPATH=/home/usuario/public_html/
     - /bin/cp -R ./*.html $DEPLOYPATH
+    - /bin/cp ./*.php $DEPLOYPATH
     - /bin/cp -R ./css $DEPLOYPATH
     - /bin/cp -R ./js $DEPLOYPATH
     - /bin/cp -R ./img $DEPLOYPATH
     - /bin/cp ./.htaccess $DEPLOYPATH
     - /bin/cp ./robots.txt $DEPLOYPATH
     - /bin/cp ./sitemap.xml $DEPLOYPATH
+    - /bin/cp ./llms.txt $DEPLOYPATH
+    - /bin/cp ./manifest.json $DEPLOYPATH
     - find $DEPLOYPATH -type d -exec chmod 755 {} \;
     - find $DEPLOYPATH -type f -exec chmod 644 {} \;
 ```
@@ -75,6 +78,9 @@ Si decides no usar cPanel:
    esta vía hay que traducir las reglas a `vercel.json` /
    `_headers` + `_redirects` (Netlify) / `_headers` (Cloudflare). Lo
    puedo generar cuando elijas plataforma.
+9. **PHP no ejecuta en Vercel/Netlify/CF Pages.** Para el formulario,
+   necesitarás un servicio externo (Formspree, Web3Forms) o una función
+   serverless. Avisa y lo preparo.
 
 ---
 
@@ -86,27 +92,15 @@ Si decides no usar cPanel:
 | 2 | www forzado | Visitar `https://residenciasanildefonso.es` | Redirige 301 a `https://www.…` |
 | 3 | 404 personalizada | Visitar `/no-existe` | Página 404 con diseño del sitio |
 | 4 | robots.txt accesible | `/robots.txt` | Contenido visible |
-| 5 | sitemap.xml accesible | `/sitemap.xml` | XML con 8 URLs |
+| 5 | sitemap.xml accesible | `/sitemap.xml` | XML con URLs del sitio |
 | 6 | Cabeceras de seguridad | <https://securityheaders.com/?q=residenciasanildefonso.es> | Grade A o A+ |
 | 7 | Mozilla Observatory | <https://observatory.mozilla.org/analyze/residenciasanildefonso.es> | B mínimo, A+ con todo bien |
 | 8 | SSL Labs | <https://www.ssllabs.com/ssltest/analyze.html?d=residenciasanildefonso.es> | A o A+ |
 | 9 | PageSpeed Mobile | <https://pagespeed.web.dev/?url=residenciasanildefonso.es> | > 90 si se autohospedan las fuentes |
-| 10 | Rich Results | <https://search.google.com/test/rich-results?url=residenciasanildefonso.es> | LodgingBusiness, BreadcrumbList, FAQ válidos |
+| 10 | Rich Results | <https://search.google.com/test/rich-results?url=residenciasanildefonso.es> | LodgingBusiness válido |
 | 11 | Mobile-Friendly | <https://search.google.com/test/mobile-friendly?url=residenciasanildefonso.es> | "Apta para móviles" |
-| 12 | Formulario contacto | Enviar consulta de prueba | Llega email a `sanildefonso@crusa.es` |
-| 13 | Mapa carga bajo demanda | Abrir `/contacto.html`, comprobar DevTools Network | Cero peticiones a google.com hasta clic |
-| 14 | Cookies | Borrar localStorage, recargar | Banner aparece, Aceptar/Rechazar funcionan |
-| 15 | Google Search Console | <https://search.google.com/search-console> | Añadir propiedad, verificar, enviar `sitemap.xml` |
-| 16 | Google Business Profile | <https://business.google.com> | Actualizar URL con `https://www.residenciasanildefonso.es/` y verificar NAP |
-
----
-
-## 🔄 Workflow en marcha
-
-Una vez configurado:
-
-```
-Editar local → git commit → git push main → cPanel auto-deploy → web actualizada
-```
-
-Tiempo desde push hasta web actualizada: **< 30 segundos** con cPanel Git.
+| 12 | Formulario contacto | Visitar `/contacto.html` → rellena y envía (CAPTCHA incluido) | Llega email a `sanildefonso@crusa.es`; CAPTCHA incorrecto redirige a `contacto.php?error=1&motivo=captcha` |
+| 13 | Redirección CAPTCHA | Visitar `/contacto.html` directamente | Redirige 301 a `/contacto.php` (PHP ejecuta el CAPTCHA); verificar en DevTools → Network |
+| 14 | Mapa carga bajo demanda | Abrir `/contacto.html` o `/contacto.php`, comprobar DevTools Network | Cero peticiones a google.com hasta clic |
+| 15 | Cookies | Borrar localStorage, recargar | Banner aparece, Aceptar/Rechazar funcionan |
+| 16 | Google Search Console | <https://search.google.com/search-consol

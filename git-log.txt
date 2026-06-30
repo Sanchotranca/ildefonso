@@ -1,5 +1,11 @@
-=== REINICIO COMPLETO === 
-Borrando historial git... 
-Inicializando git limpio... 
-Initialized empty Git repository in C:/Users/David/OneDrive/Escritorio/ildefonso-claude-create-residencia-website-pP3AP/.git/
-Añadiendo todos los archivos... 
+=== Commit y push === 
+warning: in the working copy of '.github/workflows/gh-pages.yml', LF will be replaced by CRLF the next time Git touches it
+[master f8a9327] Add GitHub Pages Actions workflow
+ 1 file changed, 34 insertions(+)
+ create mode 100644 .github/workflows/gh-pages.yml
+To https://github.com/Sanchotranca/ildefonso.git
+   d0019dd..f8a9327  HEAD -> main
+To https://github.com/Sanchotranca/ildefonso.git
+   d0019dd..f8a9327  HEAD -> claude/create-residencia-website-pP3AP
+Codigo de salida: 0 
+Fin. 

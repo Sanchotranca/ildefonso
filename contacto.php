@@ -1,8 +1,31 @@
 <?php
+ini_set('session.cookie_httponly', 1);
+ini_set('session.cookie_secure', 1);
+ini_set('session.cookie_samesite', 'Lax');
 session_start();
+
 $n1 = rand(2, 9);
 $n2 = rand(1, 9);
 $_SESSION['captcha_res'] = $n1 + $n2;
+
+// CSRF token — se genera una sola vez por sesión
+if (empty($_SESSION['csrf_token'])) {
+    $_SESSION['csrf_token'] = bin2hex(random_bytes(32));
+}
+$csrf = $_SESSION['csrf_token'];
+
+// Procesar errores devueltos por enviar.php
+$error_msg = '';
+if (isset($_GET['error'])) {
+    $motivo = isset($_GET['motivo']) ? (string) $_GET['motivo'] : '';
+    if ($motivo === 'csrf') {
+        $error_msg = 'Por seguridad, la sesión ha caducado. Vuelve a rellenar el formulario y envíalo de nuevo.';
+    } elseif ($motivo === 'captcha') {
+        $error_msg = 'La verificación matemática no es correcta. Comprueba el resultado del cálculo y vuelve a intentarlo.';
+    } else {
+        $error_msg = 'No se pudo enviar tu consulta. Revisa que los campos obligatorios (nombre, email y mensaje) estén completos y vuelve a intentarlo.';
+    }
+}
 ?>
 <!DOCTYPE html>
 <html lang="es">
@@ -11,14 +34,14 @@ $_SESSION['captcha_res'] = $n1 + $n2;
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Contacto y solicitud — Residencia San Ildefonso | Alcalá</title>
   <meta name="description" content="Contacta con la Residencia San Ildefonso de Alcalá de Henares: dirección, teléfono, email y formulario para solicitar plaza o reservar visita.">
-  <meta name="robots" content="index, follow">
   <meta name="theme-color" content="#003DA5">
-  <link rel="canonical" href="https://www.residenciasanildefonso.es/contacto.html">
+  <link rel="manifest" href="/manifest.json">
+  <link rel="canonical" href="https://www.residenciasanildefonso.es/contacto.php">
 
   <meta property="og:type" content="website">
   <meta property="og:title" content="Contacto y solicitud — Residencia San Ildefonso | Alcalá">
   <meta property="og:description" content="Contacta con la Residencia San Ildefonso de Alcalá de Henares: dirección, teléfono, email y formulario para solicitar plaza o reservar visita.">
-  <meta property="og:url" content="https://www.residenciasanildefonso.es/contacto.html">
+  <meta property="og:url" content="https://www.residenciasanildefonso.es/contacto.php">
   <meta property="og:image" content="https://www.residenciasanildefonso.es/img/og-image.webp">
   <meta property="og:image:width" content="1200">
   <meta property="og:image:height" content="630">
@@ -26,7 +49,6 @@ $_SESSION['captcha_res'] = $n1 + $n2;
   <meta property="og:site_name" content="Residencia San Ildefonso">
   <meta name="twitter:card" content="summary_large_image">
 
-  <!-- Meta geo (Bing, Yandex y bots no-Google) -->
   <meta name="geo.region" content="ES-MD">
   <meta name="geo.placename" content="Alcalá de Henares, Madrid">
   <meta name="geo.position" content="40.482236;-3.363976">
@@ -34,73 +56,116 @@ $_SESSION['captcha_res'] = $n1 + $n2;
 
   <link rel="icon" href="img/favicon.ico" sizes="any">
   <link rel="icon" type="image/png" sizes="32x32" href="img/favicon-32.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/img/favicon-16.png">
   <link rel="apple-touch-icon" sizes="180x180" href="img/apple-touch-icon.png">
 
-  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.googleapis.com" crossorigin>
+  <link rel="dns-prefetch" href="https://fonts.gstatic.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link rel="preload" as="style" href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@400;600;700&display=swap">
-  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@400;600;700&display=swap">
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@400;600;700&display=swap" media="print">
+  <noscript><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@400;600;700&display=swap"></noscript>
 
-  <link rel="stylesheet" href="css/style.css">
+  <style>
+  /* CSS crítico — estilos sobre el pliegue | 2026-06-30 */
+  @layer reset,base,layout,components,utilities,motion,print;
+  :root{--color-primary:#003DA5;--color-primary-dark:#002D7A;--color-primary-light:#1A56C4;--color-accent:#0066CC;--color-accent-light:#5B9BD5;--color-bg:#fff;--color-bg-alt:#F0F4FC;--color-bg-band:#E6EDF8;--color-bg-dark:#001F6B;--color-text:#1a1a2e;--color-text-muted:#4a5568;--color-heading:#001F6B;--color-border:#C8D8EE;--font-heading:"Open Sans","Segoe UI",Arial,sans-serif;--font-body:"Open Sans","Source Sans 3","Segoe UI",Arial,sans-serif;--space-xs:0.25rem;--space-sm:0.5rem;--space-md:1rem;--space-lg:2rem;--space-xl:4rem;--max-width:1200px;--gutter:clamp(1rem,4vw,2rem);--radius:0.25rem;--shadow-sm:0 1px 2px rgba(0,0,0,.08);--shadow-md:0 6px 18px rgba(0,0,0,.08);--transition:.25s ease}
+  @layer reset{*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}html{-webkit-text-size-adjust:100%;scroll-behavior:smooth}body{min-height:100vh}img,picture,svg,video{display:block;max-width:100%;height:auto}ul,ol{list-style:none}button,input,select,textarea{font:inherit;color:inherit}table{border-collapse:collapse}a{color:inherit;text-decoration:none}}
+  @layer base{body{font-family:var(--font-body);font-size:100%;line-height:1.6;color:var(--color-text);background:var(--color-bg);-webkit-font-smoothing:antialiased;-moz-osx-font-smoothing:grayscale}h1,h2,h3,h4{font-family:var(--font-heading);font-weight:700;line-height:1.2;color:var(--color-heading);margin-bottom:.6em}h1{font-size:clamp(2rem,1.5rem + 2.5vw,3.5rem)}h2{font-size:clamp(1.5rem,1rem + 2vw,2.5rem)}h3{font-size:clamp(1.25rem,1rem + 1vw,1.75rem)}p{margin-bottom:1em;max-width:70ch}a{color:var(--color-primary);text-decoration:underline;text-underline-offset:2px;text-decoration-thickness:1px;transition:color var(--transition)}a:hover,a:focus-visible{color:var(--color-primary-dark)}:focus-visible{outline:3px solid var(--color-accent);outline-offset:2px;border-radius:2px}}
+  @layer layout{.container{width:100%;max-width:var(--max-width);margin-inline:auto;padding-inline:var(--gutter)}.section{padding-block:clamp(1.75rem,4vw,3.5rem)}}
+  @layer components{.skip-link{position:absolute;left:-9999px;top:0;background:var(--color-primary);color:#fff;padding:var(--space-sm) var(--space-md);z-index:1000;text-decoration:none}.skip-link:focus{left:0}.site-header{background:#fff;border-bottom:4px solid var(--color-primary);position:sticky;top:0;z-index:100;box-shadow:var(--shadow-sm)}.site-header__inner{display:flex;align-items:center;justify-content:space-between;gap:var(--space-md);min-height:6.5rem}.brand{display:flex;align-items:center;gap:var(--space-sm);text-decoration:none;color:inherit}.brand__crest{width:auto;height:4.75rem;max-height:4.75rem;flex-shrink:0;object-fit:contain;filter:saturate(1.5) contrast(1.15) brightness(1.05)}.brand__text{display:flex;flex-direction:column;line-height:1.15}.brand__title{font-family:var(--font-heading);font-weight:700;font-size:1.45rem;color:#000;white-space:nowrap}.nav-toggle{background:transparent;border:1px solid var(--color-border);border-radius:var(--radius);padding:.625rem .75rem;cursor:pointer;min-width:2.75rem;min-height:2.75rem;display:inline-flex;flex-direction:column;justify-content:center;gap:.25rem}.nav-toggle__bar{display:block;width:1.375rem;height:.125rem;background:var(--color-primary)}.main-nav{position:absolute;inset:100% 0 auto 0;background:#fff;border-bottom:4px solid var(--color-primary);box-shadow:var(--shadow-md);display:none}.main-nav[data-open=true]{display:block}.main-nav__list{display:flex;flex-direction:column;padding:var(--space-xs) 0}.main-nav__link{display:block;padding:.875rem var(--gutter);font-weight:600;font-size:1rem;color:var(--color-heading);text-decoration:none;border-bottom:1px solid var(--color-border);border-left:4px solid transparent;min-height:2.75rem}.main-nav__link:hover,.main-nav__link:focus-visible,.main-nav__link[aria-current=page]{color:var(--color-primary);border-left-color:var(--color-accent);background:var(--color-bg-alt)}.page-header{background:linear-gradient(135deg,rgba(0,31,107,.92),rgba(0,61,165,.78)),var(--color-primary);color:#fff;padding-block:clamp(2.5rem,5vw,4rem)}.page-header h1{color:#fff}.page-header__lead{color:#dce8f8;max-width:65ch;font-size:1.0625rem}}
+  </style>
+  <link rel="stylesheet" href="css/style.min.css" media="print">
+  <noscript><link rel="stylesheet" href="css/style.min.css"></noscript>
 
-  
-
-  <script type="application/ld+json">{
-  "@context": "https://schema.org",
-  "@type": "LodgingBusiness",
-  "@id": "https://www.residenciasanildefonso.es#residencia",
-  "name": "Residencia San Ildefonso",
-  "url": "https://www.residenciasanildefonso.es",
-  "telephone": "+34 91 878 81 46",
-  "email": "sanildefonso@crusa.es",
-  "taxID": "A-80991714",
-  "image": "https://www.residenciasanildefonso.es/img/og-image.webp",
-  "priceRange": "270–995 €/mes",
-  "currenciesAccepted": "EUR",
-  "paymentAccepted": "Transferencia bancaria, Tarjeta",
-  "numberOfRooms": 41,
-  "petsAllowed": false,
-  "smokingAllowed": false,
-  "amenityFeature": [
-    {"@type": "LocationFeatureSpecification", "name": "Wifi gratuito", "value": true},
-    {"@type": "LocationFeatureSpecification", "name": "Comedor / pensión completa", "value": true},
-    {"@type": "LocationFeatureSpecification", "name": "Biblioteca y salas de estudio", "value": true},
-    {"@type": "LocationFeatureSpecification", "name": "Conserjería 24 horas", "value": true},
-    {"@type": "LocationFeatureSpecification", "name": "Limpieza y lavandería", "value": true},
-    {"@type": "LocationFeatureSpecification", "name": "Calefacción", "value": true},
-    {"@type": "LocationFeatureSpecification", "name": "Baño privado en habitación", "value": true},
-    {"@type": "LocationFeatureSpecification", "name": "Televisión y aire acondicionado", "value": true}
-  ],
-  "address": {
-    "@type": "PostalAddress",
-    "streetAddress": "Plaza San Diego, s/n",
-    "addressLocality": "Alcalá de Henares",
-    "addressRegion": "Madrid",
-    "postalCode": "28801",
-    "addressCountry": "ES"
-  },
-  "geo": { "@type": "GeoCoordinates", "latitude": "40.482236", "longitude": "-3.363976" },
-  "openingHoursSpecification": [{
-    "@type": "OpeningHoursSpecification",
-    "dayOfWeek": ["Monday","Tuesday","Wednesday","Thursday","Friday"],
-    "opens": "09:00", "closes": "19:00"
-  }],
-  "makesOffer": [
-    {"@type": "Offer", "name": "Habitación individual", "price": "365", "priceCurrency": "EUR", "priceSpecification": {"@type": "UnitPriceSpecification", "price": "365", "priceCurrency": "EUR", "unitText": "MES"}, "availability": "https://schema.org/InStock"},
-    {"@type": "Offer", "name": "Habitación doble (por persona)", "price": "270", "priceCurrency": "EUR", "priceSpecification": {"@type": "UnitPriceSpecification", "price": "270", "priceCurrency": "EUR", "unitText": "MES"}, "availability": "https://schema.org/InStock"}
-  ],
-  "sameAs": ["https://crusa.es/", "https://www.uah.es/"]
-}</script>
-  <script type="application/ld+json">{"@context": "https://schema.org", "@type": "BreadcrumbList", "itemListElement": [{"@type": "ListItem", "position": 1, "name": "Inicio", "item": "https://www.residenciasanildefonso.es/"}, {"@type": "ListItem", "position": 2, "name": "Contacto", "item": "https://www.residenciasanildefonso.es/contacto.html"}]}</script>
-  <script type="application/ld+json">{"@context": "https://schema.org", "@type": "FAQPage", "mainEntity": [{"@type": "Question", "name": "¿Qué documentación necesito para solicitar plaza?", "acceptedAnswer": {"@type": "Answer", "text": "DNI o pasaporte, justificante de matrícula o admisión universitaria y, si procede, expediente académico del curso anterior."}}, {"@type": "Question", "name": "¿Aceptan estudiantes Erasmus o de intercambio?", "acceptedAnswer": {"@type": "Answer", "text": "Sí. La Residencia acoge habitualmente estudiantes de intercambio durante el curso académico."}}, {"@type": "Question", "name": "¿Se puede visitar la Residencia antes de solicitar plaza?", "acceptedAnswer": {"@type": "Answer", "text": "Sí, organizamos visitas con cita previa. Indícalo en el formulario o llama al +34 91 878 81 46."}}, {"@type": "Question", "name": "¿Está incluida la limpieza?", "acceptedAnswer": {"@type": "Answer", "text": "Sí, la limpieza de las habitaciones y la lavandería están incluidas en el precio del alojamiento."}}, {"@type": "Question", "name": "¿Cuánto es la fianza?", "acceptedAnswer": {"@type": "Answer", "text": "La fianza al ingresar es de 300 €, reembolsable al finalizar la estancia conforme a la normativa interna."}}, {"@type": "Question", "name": "¿Puedo elegir el régimen de comidas?", "acceptedAnswer": {"@type": "Answer", "text": "Sí, puedes optar por pensión completa, media pensión o solo alojamiento."}}]}</script>
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "LodgingBusiness",
+    "@id": "https://www.residenciasanildefonso.es#residencia",
+    "name": "Residencia Universitaria San Ildefonso UAH",
+    "url": "https://www.residenciasanildefonso.es",
+    "telephone": "+34 91 878 81 46",
+    "email": "sanildefonso@crusa.es",
+    "taxID": "A-80991714",
+    "image": "https://www.residenciasanildefonso.es/img/og-image.webp",
+    "currenciesAccepted": "EUR",
+    "paymentAccepted": "Transferencia bancaria, Tarjeta",
+    "petsAllowed": false,
+    "smokingAllowed": false,
+    "amenityFeature": [
+      {"@type": "LocationFeatureSpecification", "name": "Wifi gratuito", "value": true},
+      {"@type": "LocationFeatureSpecification", "name": "Comedor / pensión completa", "value": true},
+      {"@type": "LocationFeatureSpecification", "name": "Biblioteca y salas de estudio", "value": true},
+      {"@type": "LocationFeatureSpecification", "name": "Conserjería 24 horas", "value": true},
+      {"@type": "LocationFeatureSpecification", "name": "Limpieza y lavandería", "value": true},
+      {"@type": "LocationFeatureSpecification", "name": "Calefacción", "value": true},
+      {"@type": "LocationFeatureSpecification", "name": "Baño privado en habitación", "value": true},
+      {"@type": "LocationFeatureSpecification", "name": "Televisión y aire acondicionado", "value": true}
+    ],
+    "address": {
+      "@type": "PostalAddress",
+      "streetAddress": "Plaza San Diego, s/n",
+      "addressLocality": "Alcalá de Henares",
+      "addressRegion": "Madrid",
+      "postalCode": "28801",
+      "addressCountry": "ES"
+    },
+    "geo": { "@type": "GeoCoordinates", "latitude": "40.482236", "longitude": "-3.363976" },
+    "openingHoursSpecification": [{
+      "@type": "OpeningHoursSpecification",
+      "dayOfWeek": ["Monday","Tuesday","Wednesday","Thursday","Friday"],
+      "opens": "09:00", "closes": "19:00"
+    }],
+    "sameAs": ["https://crusa.es/", "https://www.uah.es/"]
+  }
+  </script>
+  <script type="application/ld+json">
+  {"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[
+    {"@type":"ListItem","position":1,"name":"Inicio","item":"https://www.residenciasanildefonso.es/"},
+    {"@type":"ListItem","position":2,"name":"Contacto","item":"https://www.residenciasanildefonso.es/contacto.php"}
+  ]}
+  </script>
+  <script type="application/ld+json">
+  {"@context":"https://schema.org","@type":"FAQPage","mainEntity":[
+    {"@type":"Question","name":"¿Cómo realizo una reserva?",
+     "acceptedAnswer":{"@type":"Answer","text":"Puede reservar por teléfono llamando al 91 878 81 46 / 91 882 69 36, por email a sanildefonso@crusa.es, o a través del formulario de esta página."}},
+    {"@type":"Question","name":"¿Cuáles son los precios por noche?",
+     "acceptedAnswer":{"@type":"Answer","text":"Habitación individual: 35,00 € / noche. Habitación doble: 45,00 € / noche. Para grupos o estancias prolongadas, consulte condiciones especiales."}},
+    {"@type":"Question","name":"¿Están incluidos wifi y limpieza?",
+     "acceptedAnswer":{"@type":"Answer","text":"Sí. Todas las habitaciones incluyen wifi, calefacción, televisión y aire acondicionado y limpieza diaria sin coste adicional."}},
+    {"@type":"Question","name":"¿Disponen de comedor?",
+     "acceptedAnswer":{"@type":"Answer","text":"Sí, la Residencia cuenta con comedor propio en planta baja disponible para los huéspedes."}},
+    {"@type":"Question","name":"¿Aceptan grupos o congresos?",
+     "acceptedAnswer":{"@type":"Answer","text":"Sí. La Residencia atiende congresos, cursos, tribunales, profesores visitantes y eventos universitarios. Contacte con nosotros para condiciones especiales de grupo."}},
+    {"@type":"Question","name":"¿Cómo se llega desde Madrid?",
+     "acceptedAnswer":{"@type":"Answer","text":"A 25 km de Madrid por la Autovía A-2 (~30 min), y a 15 km del Aeropuerto de Barajas. Cercanías C2 y C7 con parada en Alcalá de Henares, y autobuses 223 y 824."}}
+  ]}
+  </script>
 </head>
 <body>
   <a class="skip-link" href="#main">Saltar al contenido principal</a>
 
+  <!-- Topbar — tel/email visibles en todas las resoluciones (sin abrir hamburger) -->
+  <div class="topbar" role="complementary" aria-label="Contacto rápido">
+    <div class="container topbar__inner">
+      <div class="topbar__contact">
+        <a href="tel:+34918788146">91 878 81 46</a>
+        <a href="mailto:sanildefonso@crusa.es" class="topbar__email">sanildefonso@crusa.es</a>
+      </div>
+      <div class="topbar__links">
+        <a href="https://www.uah.es/" rel="noopener noreferrer external">UAH</a>
+      </div>
+    </div>
+  </div>
+
   <header class="site-header" role="banner">
     <div class="container site-header__inner">
-      <a href="index.html" class="brand" aria-label="Inicio – Residencia San Ildefonso">
-        <img src="img/logo-san-ildefonso.jpg" alt="Residencia Universitaria San Ildefonso" class="brand__crest" width="90" height="61" fetchpriority="high">
+      <a href="/" class="brand" aria-label="Inicio – Residencia San Ildefonso">
+        <picture>
+          <source type="image/avif" srcset="img/logo-san-ildefonso.avif">
+          <source type="image/webp" srcset="img/logo-san-ildefonso.webp">
+          <img src="img/logo-san-ildefonso.jpg" alt="Residencia Universitaria San Ildefonso" class="brand__crest" width="90" height="61" loading="eager" fetchpriority="high">
+        </picture>
         <span class="brand__text">
           <span class="brand__title">Residencia San Ildefonso</span>
         </span>
@@ -112,9 +177,9 @@ $_SESSION['captcha_res'] = $n1 + $n2;
       </button>
       <nav id="primary-nav" class="main-nav" aria-label="Navegación principal">
         <ul class="main-nav__list">
-          <li><a class="main-nav__link" href="index.html">Inicio</a></li>
+          <li><a class="main-nav__link" href="/">Inicio</a></li>
           <li><a class="main-nav__link" href="residencia.html">La Residencia</a></li>
-          <li><a class="main-nav__link" href="contacto.html" aria-current="page">Contacto</a></li>
+          <li><a class="main-nav__link" href="contacto.php" aria-current="page">Contacto</a></li>
         </ul>
       </nav>
     </div>
@@ -123,13 +188,11 @@ $_SESSION['captcha_res'] = $n1 + $n2;
   <main id="main">
     <section class="page-header">
       <div class="container">
-        
         <nav class="breadcrumb" aria-label="Migas de pan">
           <ol>
-            <li><a href="index.html">Inicio</a></li><li aria-current="page">Contacto</li>
+            <li><a href="/">Inicio</a></li><li aria-current="page">Contacto</li>
           </ol>
         </nav>
-
         <h1>Contacto y reservas</h1>
         <p class="page-header__lead">
           Cuéntenos qué necesita. Le respondemos antes de 48 horas.
@@ -146,6 +209,14 @@ $_SESSION['captcha_res'] = $n1 + $n2;
               Fechas, número de personas, motivo. Con eso es suficiente.
             </p>
             <form class="form" action="enviar.php" method="POST">
+              <?php if ($error_msg): ?>
+              <div class="form__error" role="alert" aria-live="assertive">
+                <strong>No se ha podido enviar.</strong>
+                <p><?php echo htmlspecialchars($error_msg, ENT_QUOTES, 'UTF-8'); ?></p>
+              </div>
+              <?php endif; ?>
+
+              <input type="hidden" name="csrf_token" value="<?php echo htmlspecialchars($csrf, ENT_QUOTES, 'UTF-8'); ?>">
 
               <div class="form__row form__row--2">
                 <div class="form__field">
@@ -182,8 +253,18 @@ $_SESSION['captcha_res'] = $n1 + $n2;
                   </select>
                 </div>
                 <div class="form__field">
-                  <label for="fechas">Fechas aproximadas</label>
-                  <input type="text" id="fechas" name="fechas" placeholder="Ej: 10-15 julio 2026">
+                  <!-- Placeholder invisible para alinear grid -->
+                </div>
+              </div>
+
+              <div class="form__row form__row--2">
+                <div class="form__field">
+                  <label for="fecha_entrada">Fecha de llegada</label>
+                  <input type="date" id="fecha_entrada" name="fecha_entrada">
+                </div>
+                <div class="form__field">
+                  <label for="fecha_salida">Fecha de salida</label>
+                  <input type="date" id="fecha_salida" name="fecha_salida">
                 </div>
               </div>
 
@@ -209,8 +290,9 @@ $_SESSION['captcha_res'] = $n1 + $n2;
                 <span>He leído y acepto la <a href="politica-privacidad.html">política de privacidad</a> y el tratamiento de mis datos para gestionar mi consulta.</span>
               </label>
 
-              <div>
+              <div class="btn-group">
                 <button class="btn btn--primary btn--lg" type="submit">Enviar consulta</button>
+                <button class="btn btn--secondary btn--lg" type="reset">Cancelar</button>
               </div>
               <p class="form__note">Le responderemos al correo indicado en un plazo máximo de 48 h laborables.</p>
             </form>
@@ -246,7 +328,7 @@ $_SESSION['captcha_res'] = $n1 + $n2;
                 de autobús con parada cerca de la Plaza de San Diego.
               </p>
               <p>
-                <a href="https://maps.google.com/?q=Plaza+San+Diego,+Alcalá+de+Henares" rel="noopener noreferrer external">Abrir en Google Maps ↗</a>
+                <a href="https://maps.google.com/?q=Plaza+San+Diego,+Alcalá+de+Henares" target="_blank" rel="noopener noreferrer external">Abrir en Google Maps ↗</a>
               </p>
             </div>
 
@@ -299,7 +381,7 @@ $_SESSION['captcha_res'] = $n1 + $n2;
     </section>
   </main>
 
-      <footer class="site-footer" role="contentinfo">
+  <footer class="site-footer" role="contentinfo">
     <div class="container">
       <div class="footer-main">
         <div class="footer-col">
@@ -321,22 +403,31 @@ $_SESSION['captcha_res'] = $n1 + $n2;
           </ul>
         </div>
         <div class="footer-col footer-col--logo">
-          <a href="index.html" class="footer__logo-link" aria-label="Inicio">
-            <img src="img/logo-san-ildefonso-transparent.png" alt="Residencia San Ildefonso" class="footer__logo" width="150" height="102">
+          <a href="/" class="footer__logo-link" aria-label="Inicio">
+            <picture>
+              <source type="image/avif" srcset="img/logo-san-ildefonso-transparent.avif">
+              <source type="image/webp" srcset="img/logo-san-ildefonso-transparent.webp">
+              <img src="img/logo-san-ildefonso-transparent.png" alt="Residencia San Ildefonso" class="footer__logo" width="150" height="102" loading="lazy">
+            </picture>
           </a>
         </div>
         <div class="footer-col footer-col--logo">
           <a href="https://www.uah.es/" class="footer__logo-link footer__logo-link--uah" rel="noopener noreferrer external" aria-label="Universidad de Alcalá">
-            <img src="img/logo-uah-blanco.png" alt="Universidad de Alcalá" class="footer__logo" width="150" height="102">
+            <picture>
+              <source type="image/avif" srcset="img/logo-uah-blanco.avif">
+              <source type="image/webp" srcset="img/logo-uah-blanco.webp">
+              <img src="img/logo-uah-blanco.png" alt="Universidad de Alcalá" class="footer__logo" width="150" height="102" loading="lazy">
+            </picture>
           </a>
         </div>
       </div>
       <div class="site-footer__bottom">
-        <span>© 2026 Residencia Universitaria San Ildefonso UAH.</span>
+        <span>© 2026 Residencia Universitaria San Ildefonso UAH. Actualizado: <time datetime="2026-06">junio 2026</time>.</span>
         <nav class="footer-legal" aria-label="Legal">
           <a href="aviso-legal.html">Aviso legal</a>
           <a href="politica-privacidad.html">Privacidad</a>
           <a href="politica-cookies.html">Cookies</a>
+          <button type="button" class="footer-legal__btn" id="cookies-config">Configurar cookies</button>
         </nav>
       </div>
     </div>
@@ -352,7 +443,6 @@ $_SESSION['captcha_res'] = $n1 + $n2;
     </div>
   </aside>
 
-  <script src="js/main.js" defer></script>
+  <script src="js/main.min.js" defer></script>
 </body>
 </html>
-                                                                                                                                                                                                                                                                                                              

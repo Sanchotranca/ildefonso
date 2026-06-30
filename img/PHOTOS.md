@@ -5,10 +5,11 @@ para mostrar fotografías reales del Colegio Mayor de San Ildefonso y la
 Universidad de Alcalá en el hero, las tarjetas y la galería.
 
 > **Importante para producción**: el estándar ELIAWEB v4 exige que las
-> imágenes se sirvan **localmente en formato WebP con dimensiones
-> explícitas**. Antes de pasar a producción definitiva hay que descargar
-> cada foto, comprimirla en <https://squoosh.app/> y sustituir el
-> `src` actual por la ruta local (`/img/...webp`).
+> imágenes se sirvan **localmente con dimensiones explícitas**,
+> con el siguiente orden de formatos: **AVIF primero. Fallback WebP.
+> Fallback final JPG.** Antes de pasar a producción definitiva hay que
+> descargar cada foto, exportarla en <https://squoosh.app/> y sustituir
+> el `src` actual por la ruta local (`/img/...avif` + fallback `.webp`).
 
 ## 1. Imágenes hot-linked actualmente (Wikimedia Commons · CC)
 
@@ -62,10 +63,12 @@ Páginas-fuente (con metadatos de licencia y autor):
    minúsculas y guiones: `fachada-plateresca.jpg`, `patio-filosofos.jpg`,
    `comedor.jpg`, `habitacion-individual.jpg`, etc.
 4. Abrir <https://squoosh.app/>, arrastrar el archivo y exportar como
-   **WebP** con las dimensiones recomendadas (ver sección 3).
-5. Guardar el WebP final en `img/`.
-6. Sustituir el `src` correspondiente del HTML (o el `background` del
-   CSS para el hero) por la ruta local `/img/nombre.webp`.
+   **AVIF** con las dimensiones recomendadas (ver sección 3). Exportar
+   también una versión **WebP** del mismo archivo como fallback.
+5. Guardar ambos archivos (`nombre.avif` y `nombre.webp`) en `img/`.
+6. Para `<img>`: usar `<picture>` con `<source type="image/avif">` +
+   `<source type="image/webp">` + `<img src="nombre.jpg">` final.
+   Para el hero CSS: `image-set(url('/img/nombre.avif') type('image/avif'), url('/img/nombre.webp') type('image/webp'))`.
 
 ### Permisos y atribución
 
@@ -80,7 +83,7 @@ Páginas-fuente (con metadatos de licencia y autor):
 
 ## 3. Dimensiones recomendadas
 
-| Imagen | Dimensiones | Calidad WebP |
+| Imagen | Dimensiones | Calidad AVIF / WebP |
 |---|---|---|
 | Hero principal | 1600 × 900 px | 75 – 80 |
 | OG image (Open Graph) | **1200 × 630 px exactos** | 75 – 80 |
@@ -91,8 +94,8 @@ Páginas-fuente (con metadatos de licencia y autor):
 
 | Ruta actual | Lo que muestra | Sustituir por |
 |---|---|---|
-| `img/hero.webp` (placeholder) | Patrón generado | Foto panorámica de la fachada o del patio principal |
-| `img/og-image.webp` (placeholder) | Composición con escudo + texto | Foto representativa con texto integrado |
+| `img/hero.avif` + `hero.webp` (placeholder) | Patrón generado | Foto panorámica de la fachada o del patio principal |
+| `img/og-image.avif` + `og-image.webp` (placeholder) | Composición con escudo + texto | Foto representativa con texto integrado |
 | `commons.wikimedia.org/.../Colegio_Mayor_de_San_Ildefonso.JPG` | Fachada plateresca | Foto propia o cesión FGUA/UAH de la fachada |
 | `commons.wikimedia.org/.../Paraninfo.JPG` | Paraninfo (Premio Cervantes) | Foto del Paraninfo desde fgua.es |
 | `commons.wikimedia.org/.../Patio_del_Colegio_Triling%C3%BCe.jpg` | Patio Trilingüe | Foto propia del Patio de los Filósofos |

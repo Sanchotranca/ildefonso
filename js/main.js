@@ -1,6 +1,14 @@
-// Residencia San Ildefonso — JS mínimo: hero shuffle + navegación móvil + cookies
+// Residencia San Ildefonso — JS mínimo: hero shuffle + navegación móvil + cookies + PWA
 (function () {
   "use strict";
+
+  // ---------- Service Worker (PWA básico §26) ----------
+  // Registro tras 'load' para no competir con el critical path.
+  if ("serviceWorker" in navigator) {
+    window.addEventListener("load", function () {
+      navigator.serviceWorker.register("/sw.js").catch(function () { /* silencioso */ });
+    });
+  }
 
   // ---------- Hero — barajar franjas fotográficas (Fisher-Yates) ----------
   // Las imágenes viven en atributos data-bg / data-pos (sin style="" en el HTML).
@@ -31,6 +39,8 @@
       toggle.setAttribute("aria-expanded", open ? "true" : "false");
       toggle.setAttribute("aria-label",
         open ? "Cerrar menú de navegación" : "Abrir menú de navegación");
+      // §30H — bloquea scroll del body al abrir nav móvil (evita scroll-through en iOS)
+      document.body.style.overflow = open ? "hidden" : "";
     };
     toggle.addEventListener("click", function () {
       setNav(nav.getAttribute("data-open") !== "true");
@@ -64,4 +74,96 @@
     });
   }
 
-  // ---------- Bann
+  // ---------- Validación inline en formularios (mensajes ES) ----------
+  // Mensajes específicos en español por campo y por tipo de validez.
+  // Se disparan al perder el foco (blur) y al intentar enviar.
+  // Se limpian al teclear (input) para no acosar mientras escribe.
+  const VALIDATION_MESSAGES = {
+    nombre: {
+      valueMissing: "Indícanos tu nombre, por favor."
+    },
+    email: {
+      valueMissing: "Indícanos tu correo electrónico.",
+      typeMismatch: "Comprueba el correo (ejemplo: nombre@dominio.es)."
+    },
+    mensaje: {
+      valueMissing: "Cuéntanos brevemente en qué podemos ayudarte."
+    },
+    captcha: {
+      valueMissing: "Resuelve la suma para verificar que no eres un bot.",
+      badInput:     "Escribe solo el número resultado de la suma.",
+      rangeOverflow: "Comprueba el resultado: parece demasiado alto.",
+      rangeUnderflow: "Comprueba el resultado: no puede ser negativo."
+    },
+    rgpd: {
+      valueMissing: "Para enviar, debes aceptar la política de privacidad."
+    }
+  };
+  document.querySelectorAll("form.form [name]").forEach(function (field) {
+    const msgs = VALIDATION_MESSAGES[field.name];
+    if (!msgs) return;
+    field.addEventListener("blur", function () { field.checkValidity(); });
+    field.addEventListener("invalid", function () {
+      const v = field.validity;
+      let msg = "";
+      if (v.valueMissing && msgs.valueMissing)        msg = msgs.valueMissing;
+      else if (v.typeMismatch && msgs.typeMismatch)   msg = msgs.typeMismatch;
+      else if (v.badInput && msgs.badInput)           msg = msgs.badInput;
+      else if (v.rangeOverflow && msgs.rangeOverflow) msg = msgs.rangeOverflow;
+      else if (v.rangeUnderflow && msgs.rangeUnderflow) msg = msgs.rangeUnderflow;
+      if (msg) field.setCustomValidity(msg);
+    });
+    field.addEventListener("input", function () { field.setCustomValidity(""); });
+  });
+
+  // ---------- Feedback de envío en formularios ----------
+  // Al pasar la validación HTML5 y dispararse submit, deshabilita el botón
+  // y cambia su texto a "Enviando…" para evitar doble envío y dar feedback
+  // visible. Si el servidor redirige a contacto.php?error=1 la página se
+  // recarga y el botón vuelve a su estado inicial.
+  document.querySelectorAll("form.form").forEach(function (form) {
+    form.addEventListener("submit", function () {
+      const btn = form.querySelector('button[type="submit"]');
+      if (btn) {
+        btn.disabled = true;
+        btn.dataset.labelOriginal = btn.textContent;
+        btn.textContent = "Enviando…";
+      }
+    });
+  });
+
+  // ---------- Banner de cookies (LSSI/RGPD) ----------
+  const KEY    = "rsi-cookies-v1";
+  const banner = document.getElementById("cookies");
+
+  // Botón "Configurar cookies" (footer): revoca el consentimiento previo,
+  // borra la preferencia guardada y vuelve a mostrar el banner. Cumple §16B
+  // "Permitir retirar el consentimiento igual de fácil que darlo".
+  const cookiesConfigBtn = document.getElementById("cookies-config");
+  if (cookiesConfigBtn && banner) {
+    cookiesConfigBtn.addEventListener("click", function () {
+      try { localStorage.removeItem(KEY); } catch (e) {}
+      banner.hidden = false;
+      banner.scrollIntoView({ behavior: "smooth", block: "end" });
+    });
+  }
+
+  if (!banner) return;
+
+  let stored = null;
+  try { stored = localStorage.getItem(KEY); } catch (e) {}
+  if (stored === "accepted" || stored === "rejected") {
+    banner.hidden = true;
+    return;
+  }
+  banner.hidden = false;
+
+  function setChoice(value) {
+    try { localStorage.setItem(KEY, value); } catch (e) {}
+    banner.hidden = true;
+  }
+  const btnAccept = document.getElementById("cookies-accept");
+  const btnReject = document.getElementById("cookies-reject");
+  if (btnAccept) btnAccept.addEventListener("click", function () { setChoice("accepted"); });
+  if (btnReject) btnReject.addEventListener("click", function () { setChoice("rejected"); });
+}());

@@ -100,7 +100,7 @@ def head(slug, title, description, extra_jsonld=""):
     {"@type": "LocationFeatureSpecification", "name": "Limpieza y lavandería", "value": true},
     {"@type": "LocationFeatureSpecification", "name": "Calefacción", "value": true},
     {"@type": "LocationFeatureSpecification", "name": "Baño privado en habitación", "value": true},
-    {"@type": "LocationFeatureSpecification", "name": "Televisión con antena parabólica", "value": true}
+    {"@type": "LocationFeatureSpecification", "name": "Televisión y aire acondicionado", "value": true}
   ],
   "address": {
     "@type": "PostalAddress",
@@ -818,7 +818,7 @@ HAB_BODY = f"""
               <h3 class="card__title">Habitación individual</h3>
               <p class="card__text">
                 Habitación individual con cama, escritorio, armario y baño
-                completo privado. Calefacción, televisión y antena parabólica.
+                completo privado. Calefacción, televisión y aire acondicionado.
               </p>
               <ul class="card__list">
                 <li>Baño completo privado</li>
@@ -1073,7 +1073,7 @@ SERV_BODY = f"""
           <article class="feature">
             <div class="feature__icon" aria-hidden="true">TV</div>
             <h3 class="feature__title">Televisión y antena</h3>
-            <p class="feature__text">Televisión con antena parabólica en la habitación.</p>
+            <p class="feature__text">Televisión y aire acondicionado en la habitación.</p>
           </article>
           <article class="feature">
             <div class="feature__icon" aria-hidden="true">E</div>

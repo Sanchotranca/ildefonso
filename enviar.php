@@ -6,10 +6,14 @@
 // visible en el navegador).
 // ============================================================
 
+ini_set('session.cookie_httponly', 1);
+ini_set('session.cookie_secure', 1);
+ini_set('session.cookie_samesite', 'Lax');
 session_start();
 
 // ---------- Configuración ----------
-$destino      = 'sanildefonso@crusa.es';
+$destino      = 'sanildefonso@crusa.es';                       // a quién llega la consulta
+$remitente    = 'noreply@residenciasanildefonso.es';           // From SPF/DKIM-conforme con el dominio
 $nombre_sitio = 'Residencia San Ildefonso';
 $url_ok       = 'gracias.html';
 $url_ko       = 'contacto.php?error=1';
@@ -19,6 +23,16 @@ if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
     header('Location: ' . $url_ko);
     exit;
 }
+
+// ---------- CSRF token ----------
+$csrf_recibido = $_POST['csrf_token'] ?? '';
+$csrf_sesion   = $_SESSION['csrf_token'] ?? '';
+if (!$csrf_sesion || !hash_equals($csrf_sesion, $csrf_recibido)) {
+    header('Location: ' . $url_ko . '&motivo=csrf');
+    exit;
+}
+// Rotación de token post-submit (previene doble envío)
+$_SESSION['csrf_token'] = bin2hex(random_bytes(32));
 
 // ---------- Honeypot anti-spam ----------
 if (!empty($_POST['botcheck'])) {
@@ -36,7 +50,10 @@ if (!$captcha_correcto) {
 }
 
 // ---------- Sanitizar entradas ----------
+// Elimina CR/LF (y sus formas URL-encoded) ANTES de htmlspecialchars
+// para prevenir Mail Header Injection en Reply-To y otros headers.
 function limpiar(string $val): string {
+    $val = str_replace(["\r", "\n", "%0a", "%0d", "%0A", "%0D"], '', $val);
     return htmlspecialchars(strip_tags(trim($val)), ENT_QUOTES, 'UTF-8');
 }
 
@@ -67,10 +84,13 @@ if ($fecha_salida)  $cuerpo .= "Salida:    {$fecha_salida}\n";
 $cuerpo .= "\nMensaje:\n{$mensaje}\n";
 $cuerpo .= "\n---\nEnviado desde el formulario web de {$nombre_sitio}.\n";
 
-$cabeceras  = "From: {$nombre_sitio} <{$destino}>\r\n";
+$cabeceras  = "From: {$nombre_sitio} <{$remitente}>\r\n";
 $cabeceras .= "Reply-To: {$nombre} {$apellidos} <{$email}>\r\n";
 $cabeceras .= "Content-Type: text/plain; charset=UTF-8\r\n";
 $cabeceras .= "X-Mailer: PHP/" . phpversion() . "\r\n";
 
 // ---------- Enviar ----------
-$ok = 
+$ok = mail($destino, '=?UTF-8?B?' . base64_encode($asunto) . '?=', $cuerpo, $cabeceras);
+
+header('Location: ' . ($ok ? $url_ok : $url_ko));
+exit;

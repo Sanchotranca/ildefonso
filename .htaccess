@@ -83,6 +83,14 @@ RewriteRule ^contacto\.html$ /contacto.php [L,R=301]
     # tiles de Google Maps (gstatic, ggpht, googleusercontent) que carga el
     # iframe del mapa cuando el usuario lo activa; formulario POST a enviar.php (self);
     # iframe de Google Maps en frame-src (carga bajo demanda).
+    #
+    # NOTA SOBRE 'unsafe-inline' en style-src (ELIAWEB §18 — decisión documentada):
+    # Necesario para (1) critical CSS inline en <style> del head — esencial para
+    # LCP/FCP en móvil; sin él la página espera al CSS externo y la nota PageSpeed
+    # cae 10-20 puntos. Y (2) Google Fonts CSS desde fonts.googleapis.com.
+    # Riesgo aceptado: sitio estático sin entrada de usuario que genere DOM (las
+    # cabeceras de respuesta del formulario PHP están sanitizadas).
+    # Si se introducen analytics o tracking, reevaluar usando nonce/hash dinámico.
     Header set Content-Security-Policy "default-src 'self'; \
         script-src 'self'; \
         style-src 'self' https://fonts.googleapis.com 'unsafe-inline'; \
@@ -105,4 +113,19 @@ Options -Indexes
 php_flag display_errors Off
 php_flag log_errors On
 
-# ----- Bloquear archivos sensibles (jso
+# ----- Bloquear archivos sensibles (json excluido: manifest.json es público) -----
+<FilesMatch "\.(env|md|log|sql|bak|swp|swo|config|ini|yml|yaml|cursorrules|gitignore|gitattributes|ps1|bat)$">
+    Require all denied
+</FilesMatch>
+
+# ----- Bloquear cualquier archivo que empiece por punto (.env, .git, .htaccess, etc.) -----
+# El servidor procesa .htaccess internamente; este bloqueo solo impide servirlo por HTTP.
+<FilesMatch "^\.">
+    Require all denied
+</FilesMatch>
+
+# ----- Bloquear acceso a directorios sensibles -----
+RedirectMatch 404 ^/\.git
+RedirectMatch 404 ^/\.cursor
+RedirectMatch 404 ^/scripts/
+RedirectMatch 404 ^/contenido-backup/

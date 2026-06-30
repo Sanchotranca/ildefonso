@@ -32,11 +32,18 @@ config.local.*
 # Dependencias (si se introducen en el futuro)
 node_modules/
 vendor/
+package-lock.json
+package.json
 
 # Build / dist (no aplica al sitio estático actual, pero por si acaso)
 dist/
 build/
 .cache/
+.build-backup/
+
+# Archivos minificados (se generan con BUILD-PROD.ps1, no se versionan)
+css/style.min.css
+js/main.min.js
 
 # Backups y archivos pesados
 *.zip
