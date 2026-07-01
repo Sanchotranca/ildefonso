@@ -3,6 +3,35 @@
 Sitio estático en HTML5 + CSS para `residenciasanildefonso.es`, construido
 siguiendo el estándar interno **ELIAWEB v4** (mayo 2026).
 
+## Registro de cambios — 2026-07-02
+
+### Contenido
+- Eliminada la galería "La Residencia en imágenes" de la portada (decisión de producto).
+- Tagline canónico fijado: "500 años de historia / te contemplarán".
+- Purgados los restos de "Conserjería 24 horas" (Schema JSON-LD de 8 páginas y metas de servicios.html).
+
+### Repositorio e infraestructura
+- `master` pasa a ser la única rama y la rama por defecto; es copia byte a byte de producción (verificado por FTP archivo a archivo).
+- Borradas las ramas obsoletas `main`, `claude/create-residencia-website-pP3AP` y `gh-pages`.
+- Eliminado GitHub Pages: la web obsoleta sanchotranca.github.io/ildefonso ya no existe (404).
+
+### Correcciones de la auditoría ELIAWEB v4 (informe completo: AUDITORIA-ELIAWEB-v4-2026-07-02.md)
+- `offline.html`: eliminado el `onclick` inline — la CSP (`script-src 'self'`) lo bloqueaba y el botón "Reintentar" no funcionaba. Ahora recarga por navegación pura. Eliminado también el `style` inline. `sw.js` sube la caché a v3 para propagarlo.
+- `.htaccess`: canonicalización en UN solo salto 301 a `https://www` (antes había cadenas y los redirects internos `contacto.html`→`contacto.php` y `habitaciones.html`→`/` pasaban por `http://` — downgrade inseguro causado por destinos relativos tras el proxy). Destinos ahora absolutos.
+- `index.html`: añadido `<h2 class="visually-hidden">` a la sección "Resumen" (section sin encabezado violaba §2).
+- `img/favicon-16.png`: regenerado — el anterior era un cuadrado azul liso, no el escudo.
+- `img/og-image.jpg`: creado el fallback OG exigido por §17 (redes que no leen WebP).
+- Incorporados al repo los favicons y og-image que solo existían en el servidor.
+
+### Verificación (2026-07-02)
+- Lighthouse móvil real (pagespeed.web.dev): **100 / 100 / 100 / 100** + Navegación agéntica 3/3 · FCP 0,8 s · LCP 0,8 s · TBT 0 ms · CLS 0.
+- `display_errors=Off` verificado en producción con test PHP real (log_errors=On).
+- Cabeceras de seguridad, bloqueo de archivos sensibles, sitemap/robots/llms.txt: verificados en vivo.
+
+### Pendiente conocido
+- El hosting sirve PHP 7.4.33 (EOL). El cambio a 8.2 desde wePanel no llega a aplicarse; requiere gestión manual o ticket a Webempresa. (El código es compatible con 8.2.)
+- `enviar.php` en el servidor apunta provisionalmente a un correo de prueba; este repo contiene la versión definitiva (sanildefonso@crusa.es). Revertir en el servidor tras probar el formulario.
+
 ## Estructura
 
 ```
