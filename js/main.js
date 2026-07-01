@@ -1,6 +1,9 @@
 // Residencia San Ildefonso — JS mínimo: hero shuffle + navegación móvil + cookies + PWA
 (function () {
   "use strict";
+  // Activar CSS diferido (CSP-safe, sustituye al onload inline)
+  document.querySelectorAll('link[media="print"]').forEach(function (link) { link.media = "all"; });
+
 
   // ---------- Service Worker (PWA básico §26) ----------
   // Registro tras 'load' para no competir con el critical path.

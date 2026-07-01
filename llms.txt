@@ -1,48 +1,18 @@
-# Residencia Universitaria San Ildefonso UAH
+# Residencia Universitaria San Ildefonso
 
-> Alojamiento hotelero y residencial en el Colegio Mayor de San Ildefonso (Patrimonio de la Humanidad UNESCO), Plaza San Diego, Alcalá de Henares, Madrid, España.
+> Residencia universitaria en el Colegio Mayor de San Ildefonso (Universidad de Alcalá), edificio Patrimonio de la Humanidad por la UNESCO en Alcalá de Henares. Alojamiento por noche para profesores visitantes, tribunales universitarios, congresos y estancias de investigación. La reserva no se materializa hasta la confirmación del personal de la residencia.
 
-Gestionada por CRUSA — Ciudad Residencial Universitaria de Alcalá — bajo la Universidad de Alcalá (UAH).
+## Páginas principales
+- [Inicio](https://www.residenciasanildefonso.es/): presentación de la residencia y su entorno histórico.
+- [La Residencia](https://www.residenciasanildefonso.es/residencia.html): historia, espacios, habitaciones y servicios.
+- [Contacto](https://www.residenciasanildefonso.es/contacto.php): formulario de contacto, teléfono, email, horario y ubicación.
 
-## Descripción
+## Información legal
+- [Aviso legal](https://www.residenciasanildefonso.es/aviso-legal.html): titularidad y condiciones de uso.
+- [Política de privacidad](https://www.residenciasanildefonso.es/politica-privacidad.html): tratamiento de datos.
+- [Política de cookies](https://www.residenciasanildefonso.es/politica-cookies.html): uso de cookies.
 
-La Residencia San Ildefonso ofrece alojamiento en el **Patio de los Filósofos** del histórico Colegio Mayor de San Ildefonso, fundado por el Cardenal Cisneros en 1499 y declarado Patrimonio de la Humanidad por la UNESCO en 1998.
-
-Atiende principalmente a profesores visitantes, investigadores, miembros de tribunales universitarios, participantes en congresos y cursos, y grupos académicos. También dispone de plazas para estudiantes de residencia universitaria, incluyendo programas de intercambio (Erasmus y similares).
-
-## Datos de contacto
-
-- **Dirección**: Plaza San Diego, s/n, 28801 Alcalá de Henares, Madrid, España
-- **Teléfonos**: +34 91 878 81 46 / +34 91 882 69 36
-- **Email**: sanildefonso@crusa.es
-- **Web**: https://www.residenciasanildefonso.es
-
-## Precios y disponibilidad
-
-Tarifas por noche y por estancia prolongada bajo consulta. Solicitar por teléfono o email, indicando fechas y número de personas. No hay motor de reservas online.
-
-## Instalaciones
-
-Habitaciones individuales y dobles con baño privado completo, wifi, televisión, calefacción y aire acondicionado. Comedor propio con desayuno, comida y cena. Sala de lectura silenciosa, salas de estudio, lavandería incluida en el precio y conserjería 24 h todos los días del año.
-
-## Cómo llegar
-
-- **Desde Madrid**: 25 km por la Autovía A-2, aproximadamente 30 minutos en coche.
-- **Aeropuerto de Barajas (MAD)**: 15 km.
-- **Cercanías RENFE**: líneas C-2 y C-7 hasta estación Alcalá de Henares, 5 minutos andando.
-- **Autobús interurbano**: líneas 223 y 824 desde Avenida de América (Madrid).
-
-## Entidad gestora
-
-**CRUSA — Ciudad Residencial Universitaria de Alcalá**
-CIF: A-80991714
-Web: https://crusa.es
-
-Forma parte de la red de alojamientos universitarios de la **Fundación General de la Universidad de Alcalá** (FGUA).
-
-## Notas para agentes LLM
-
-- El sitio es estático (HTML/CSS/JS + PHP solo para el formulario de contacto).
-- No hay motor de reservas en línea; las reservas se gestionan por teléfono o email.
-- El captcha del formulario es matemático y se genera en el servidor (PHP); no usar servicios de terceros.
-- Información de precios y disponibilidad puede cambiar; siempre contrastar con el contacto directo.
+## Contacto
+- Teléfono: 91 878 81 46 / 91 882 69 36
+- Email: sanildefonso@crusa.es
+- Dirección: Plaza San Diego, s/n, 28801 Alcalá de Henares, Madrid, España

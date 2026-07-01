@@ -42,8 +42,6 @@ build/
 .build-backup/
 
 # Archivos minificados (se generan con BUILD-PROD.ps1, no se versionan)
-css/style.min.css
-js/main.min.js
 
 # Backups y archivos pesados
 *.zip
@@ -60,3 +58,17 @@ img/*.ai
 # Análisis / informes
 pagespeed-report.*
 lighthouse-report.*
+
+# --- Basura local / no versionar (añadido para limpiar el commit) ---
+*.zip
+_t.txt
+zi3YcHFr
+git-log.txt
+contenido-backup/
+/IMG-20180619-WA0022.jpg
+/style.min.css
+/style.src.css
+/main.min.js
+/main.src.js
+/main.fix.src.js
+.cursor/
