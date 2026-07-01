@@ -2,18 +2,18 @@
 
 RewriteEngine On
 
+# ----- Canonicalización en UN salto: cualquier host sin www -> https://www -----
+RewriteCond %{HTTP_HOST} !^www\. [NC]
+RewriteRule ^(.*)$ https://www.residenciasanildefonso.es/$1 [L,R=301]
+
 # ----- HTTPS forzado (LiteSpeed-safe: X-Forwarded-Proto, evita el bucle del proxy) -----
 RewriteCond %{HTTP:X-Forwarded-Proto} =http
 RewriteRule ^ https://%{HTTP_HOST}%{REQUEST_URI} [L,R=301]
 
-# ----- Forzar www -----
-RewriteCond %{HTTP_HOST} ^residenciasanildefonso\.es$ [NC]
-RewriteRule ^(.*)$ https://www.residenciasanildefonso.es/$1 [L,R=301]
-
-# ----- contacto.html -> contacto.php -----
-RewriteRule ^contacto\.html$ /contacto.php [L,R=301]
+# ----- contacto.html -> contacto.php (destino absoluto https: evita downgrade tras el proxy) -----
+RewriteRule ^contacto\.html$ https://www.residenciasanildefonso.es/contacto.php [L,R=301]
 # habitaciones eliminada -> home
-RewriteRule ^habitaciones\.html$ / [L,R=301]
+RewriteRule ^habitaciones\.html$ https://www.residenciasanildefonso.es/ [L,R=301]
 
 # ----- 404 -----
 ErrorDocument 404 /404.html
