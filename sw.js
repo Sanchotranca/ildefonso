@@ -2,7 +2,7 @@
 // Estrategia: HTML network-first (fallback offline.html), estáticos cache-first con revalidación.
 // §26 ELIAWEB v4.
 
-const CACHE_NAME = 'rsi-v2';
+const CACHE_NAME = 'rsi-v3';
 const STATIC_ASSETS = [
   '/',
   '/css/style.min.css',
