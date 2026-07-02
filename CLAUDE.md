@@ -6,8 +6,22 @@ Antes de preparar, editar o subir NADA:
 2. Comprobar si el archivo/cambio YA existe en el servidor (HTTP o listado FTP).
 3. Solo entonces proponer el micro-paso. Nada de rehacer trabajo ya hecho.
 
+## ⭐ ACTUALIZACIÓN 2026-07-02 (sesión Cowork) — MIGRACIÓN + SISTEMA DE 3 COPIAS
+- CARPETA DE TRABAJO NUEVA: C:\dev\ildefonso-web (clon limpio de master, FUERA de OneDrive).
+  La carpeta vieja de OneDrive queda como respaldo CONGELADO (aún NO retirada; retirar con OK para quedar en 3 copias exactas).
+- SISTEMA DE 3 COPIAS, actualización 100% MANUAL (nada automático). Fuente = C:\dev\ildefonso-web.
+  · 1-GUARDAR-EN-GITHUB.bat → respaldo a GitHub (commit+push). NO toca la web.
+  · 2-PUBLICAR-WEB.bat → publica por FTPS con PowerShell PURO (sin WinSCP): backup del sitio en vivo + vista previa + confirmación "PUBLICAR" + verificación.
+  · Motores = GUARDAR-EN-GITHUB.ps1 y PUBLICAR-WEB.ps1 (NO ejecutar los .ps1 a mano; van dentro de los .bat).
+  · Contención: Claude verifica antes de publicar; backup del live antes de sobrescribir; nada a la web sin OK explícito.
+- enviar.php CORREGIDO Y DESPLEGADO EN VIVO: destino = sanildefonso@crusa.es (definitivo) · remitente/From = nocontestar@residenciasanildefonso.es (buzón real creado por Moody). YA NO va al Gmail provisional. Sigue con mail() (SMTP descartado por ahora; sería ~3/10 de complejidad si se quiere).
+- LIMPIEZA hecha: borrados del repo SUBIR-GITHUB.bat (viejo), .github/workflows/deploy.yml, .github/workflows/gh-pages.yml, .cpanel.yml. Automatismos eliminados. _backups/ añadido a .gitignore.
+- Las 3 fotos huérfanas del servidor (/img/fachada-colegio.webp, habitacion-doble.webp, jardin-patio.webp): Moody pidió EXPLÍCITAMENTE NO tocarlas. Se quedan.
+- FTP: login verificado desde el sandbox 2026-07-02. La contraseña se volvió a usar este chat → ROTAR (pendiente).
+
 ## COORDENADAS
 - EN VIVO (canónico): https://www.residenciasanildefonso.es · Webempresa · HTTPS forzado.
+- CARPETA DE TRABAJO: C:\dev\ildefonso-web (fuera de OneDrive). Deploy y respaldo desde ahí con los botones 1- y 2-.
 - Deploy: FTP DIRECTO (no GitHub). Host cp7027.webempresa.eu · FTPS puerto 21 ·
   user MLAA@residenciasanildefonso.es · contraseña la guarda Moody.
 - Docroot remoto: /home/crusaes/public_html/sitios/residenciasanildefonso.es (chroot: la cuenta FTP entra directa ahí).
@@ -23,7 +37,7 @@ Antes de preparar, editar o subir NADA:
   favicon-16 real; og-image.jpg fallback. Todo verificado en vivo.
 - GitHub: SOLO existe master (= producción exacta). Default branch = master.
 - master↔servidor verificado archivo a archivo (clon fresco vs descarga FTP completa). Diferencias restantes,
-  TODAS intencionadas: enviar.php (server=gmail provisional para prueba; repo=crusa.es definitivo),
+  enviar.php RESUELTO 2026-07-02 (server ya = crusa.es + From nocontestar@, desplegado y verificado),
   3 imágenes huérfanas ex-galería solo en server, basura vieja .htaccess.bak/.swap solo en server,
   y docs/tooling solo en repo (no se despliegan).
 - Ramas main, claude/create-residencia-website-pP3AP y gh-pages: BORRADAS.
@@ -45,8 +59,9 @@ Antes de preparar, editar o subir NADA:
 
 ## PENDIENTE MENOR
 - Moody: borrar el token GitHub "fase2-ildefonso" (github.com/settings/personal-access-tokens) — ya no hace falta.
-- La contraseña FTP se pegó en el chat 2026-07-02: cambiarla si Moody quiere.
-- (Opcional futuro) borrar las 3 imágenes huérfanas de /img/ con OK explícito.
+- ⚠️ ROTAR la contraseña FTP (se usó de nuevo en el chat 2026-07-02). Pendiente.
+- Las 3 imágenes huérfanas de /img/ del servidor: Moody dijo NO borrarlas. SE QUEDAN (no es pendiente).
+- (Opcional) retirar la carpeta vieja de OneDrive para quedar en exactamente 3 copias (con OK).
 Decisiones cerradas: tagline canónico = el de LIVE; barajado aleatorio de galería CANCELADO.
 
 ## NORMAS DE TRATO
