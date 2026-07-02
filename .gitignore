@@ -49,6 +49,7 @@ build/
 *.sql
 *.dump
 backup/
+_backups/
 
 # Imágenes fuente de gran tamaño (mantener solo los WebP optimizados)
 img/source/

@@ -13,7 +13,7 @@ session_start();
 
 // ---------- Configuración ----------
 $destino      = 'sanildefonso@crusa.es';                       // a quién llega la consulta
-$remitente    = 'noreply@residenciasanildefonso.es';           // From SPF/DKIM-conforme con el dominio
+$remitente    = 'nocontestar@residenciasanildefonso.es';       // From: buzón real del dominio (SPF/DKIM)
 $nombre_sitio = 'Residencia San Ildefonso';
 $url_ok       = 'gracias.html';
 $url_ko       = 'contacto.php?error=1';
